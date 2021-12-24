@@ -1,0 +1,84 @@
+1. 레벨이 20이상인 캐릭터의 이름, 직업, 체력, 마력, 레벨을 출력하시오
+정답 : db.games.find({level:{$gte:20}},{name:1, job:1, hp:1, mp:1, level:1, _id:0})
+
+{ "name" : "hjs122", "job" : "warrior", "hp" : 10000, "mp" : 2500, "level" : 20 }
+{ "name" : "hjs133", "job" : "warrior", "hp" : 15000, "mp" : 4000, "level" : 30 }
+{ "name" : "hjs311", "job" : "magician", "hp" : 5000, "mp" : 12000, "level" : 25 }
+{ "name" : "hjs411", "job" : "magician", "hp" : 4300, "mp" : 10000, "level" : 22 }
+{ "name" : "hjs115", "job" : "archer", "hp" : 7900, "mp" : 8500, "level" : 31 }
+{ "name" : "hjs116", "job" : "archer", "hp" : 5300, "mp" : 5500, "level" : 20 }
+{ "name" : "hjs141", "job" : "assassin", "hp" : 6700, "mp" : 4900, "level" : 20 }
+{ "name" : "hjs334", "job" : "gunner", "hp" : 4800, "mp" : 5700, "level" : 20 }
+{ "name" : "hjs335", "job" : "gunner", "hp" : 5400, "mp" : 6700, "level" : 26 }
+{ "name" : "hjs336", "job" : "gunner", "hp" : 5900, "mp" : 7200, "level" : 28 }
+{ "name" : "hjs338", "job" : "gunner", "hp" : 6500, "mp" : 8100, "level" : 32 }
+
+
+2. 2차 전직이 가능한 캐릭터의 이름, 직업, 체력, 마력, 레벨을 출력하시오
+(2차 전직은 레벨 30이상이면서 hp가 8000이상이거나 mp가 8000이상 경우를 말한다.)
+db.games.find({level:{$gte:30},$or:[{hp:{$gte:8000}},{mp:{$gte:8000}}]},{name:1, job:1, hp:1, mp:1, level:1, _id:0})
+
+{ "name" : "hjs133", "job" : "warrior", "hp" : 15000, "mp" : 4000, "level" : 30 }
+{ "name" : "hjs115", "job" : "archer", "hp" : 7900, "mp" : 8500, "level" : 31 }
+{ "name" : "hjs338", "job" : "gunner", "hp" : 6500, "mp" : 8100, "level" : 32 }
+
+3. 캐릭터 중에서 스킬트리를 3개 보유하고 있는 캐릭터의 총 인원수를 구하시오
+db.games.find({skill:{$size:3}}).count()
+10
+
+4. high라는 이름으로 시작하는 무기를 가진 캐릭터의 이름, 직업, 레벨, 무기를 출력하시오
+db.games.find({"equipment.weapon":/^high/},{name:1, job:1, level:1, "equipment.weapon":1, _id:0})
+
+{ "name" : "hjs122", "job" : "warrior", "level" : 20, "equipment" : [ { "weapon" : "high_sword" } ] }
+{ "name" : "hjs133", "job" : "warrior", "level" : 30, "equipment" : [ { "weapon" : "high_sword" } ] }
+{ "name" : "hjs311", "job" : "magician", "level" : 25, "equipment" : [ { "weapon" : "high_wand" } ] }
+{ "name" : "hjs411", "job" : "magician", "level" : 22, "equipment" : [ { "weapon" : "high_wand" } ] }
+{ "name" : "hjs115", "job" : "archer", "level" : 31, "equipment" : [ { "weapon" : "high_bow" } ] }
+{ "name" : "hjs116", "job" : "archer", "level" : 20, "equipment" : [ { "weapon" : "high_bow" } ] }
+{ "name" : "hjs141", "job" : "assassin", "level" : 20, "equipment" : [ { "weapon" : "high_dagger" } ] }
+{ "name" : "hjs334", "job" : "gunner", "level" : 20, "equipment" : [ { "weapon" : "high_gun" } ] }
+{ "name" : "hjs335", "job" : "gunner", "level" : 26, "equipment" : [ { "weapon" : "high_gun" } ] }
+{ "name" : "hjs336", "job" : "gunner", "level" : 28, "equipment" : [ { "weapon" : "high_gun" } ] }
+{ "name" : "hjs338", "job" : "gunner", "level" : 32, "equipment" : [ { "weapon" : "high_gun" } ] }
+
+5. 레벨이 25 이상인 캐릭터에게 무기인 폭탄과 악세서리인 폭탄링을 추가한 후
+캐릭터의 이름, 직업, 레벨, 무기를 출력하시오(쿼리문 2개)
+(추가할 때는 {"weapon":"bomb","ring":"bomb_ring"} 이런식으로 추가해주면 된다.)
+db.games.update({level:{$gte:25}},{$push: {equipment : {"weapon":"bomb","ring":"bomb_ring"}}}, {multi : true});
+db.games.find({level:{$gte:25}},{name:1, job:1, level:1, "equipment.weapon":1, _id:0})
+
+{ "name" : "hjs133", "job" : "warrior", "level" : 30, "equipment" : [ { "weapon" : "high_sword" }, { "weapon" : "bomb" } ] }
+{ "name" : "hjs311", "job" : "magician", "level" : 25, "equipment" : [ { "weapon" : "high_wand" }, { "weapon" : "bomb" } ] }
+{ "name" : "hjs115", "job" : "archer", "level" : 31, "equipment" : [ { "weapon" : "high_bow" }, { "weapon" : "bomb" } ] }
+{ "name" : "hjs335", "job" : "gunner", "level" : 26, "equipment" : [ { "weapon" : "high_gun" }, { "weapon" : "bomb" } ] }
+{ "name" : "hjs336", "job" : "gunner", "level" : 28, "equipment" : [ { "weapon" : "high_gun" }, { "weapon" : "bomb" } ] }
+{ "name" : "hjs338", "job" : "gunner", "level" : 32, "equipment" : [ { "weapon" : "high_gun" }, { "weapon" : "bomb" } ] }
+
+6. 스킬트리 중에서 powerslash, lightning, firearrow, shadow, powergun중에서 하나를 포함하고 있는
+캐릭터의 이름, 직업, 레벨, 스킬을 출력하시오
+db.games.find({skill : { $in : ["powerslash","lightning","firearrow","shadow","powergun"]}},{name:1, job:1, level:1, skill:1, _id:0})
+
+{ "name" : "hjs122", "job" : "warrior", "level" : 20, "skill" : [ "stab", "swing", "powerslash" ] }
+{ "name" : "hjs133", "job" : "warrior", "level" : 30, "skill" : [ "stab", "swing", "powerslash", "deathblow" ] }
+{ "name" : "hjs211", "job" : "magician", "level" : 12, "skill" : [ "energybolt", "heal", "lightning" ] }
+{ "name" : "hjs311", "job" : "magician", "level" : 25, "skill" : [ "energybolt", "heal", "lightning", "explosion" ] }
+{ "name" : "hjs411", "job" : "magician", "level" : 22, "skill" : [ "energybolt", "heal", "lightning", "explosion" ] }
+{ "name" : "hjs511", "job" : "magician", "level" : 15, "skill" : [ "energybolt", "heal", "lightning" ] }
+{ "name" : "hjs115", "job" : "archer", "level" : 31, "skill" : [ "shot", "doubleshot", "firearrow", "icearrow" ] }
+{ "name" : "hjs116", "job" : "archer", "level" : 20, "skill" : [ "shot", "doubleshot", "firearrow" ] }
+{ "name" : "hjs141", "job" : "assassin", "level" : 20, "skill" : [ "stab", "speedup", "shadow" ] }
+{ "name" : "hjs151", "job" : "assassin", "level" : 18, "skill" : [ "stab", "speedup", "shadow" ] }
+{ "name" : "hjs161", "job" : "assassin", "level" : 17, "skill" : [ "stab", "speedup", "shadow" ] }
+{ "name" : "hjs338", "job" : "gunner", "level" : 32, "skill" : [ "fire", "doublefire", "lightninggun", "powergun" ] }
+
+7. 레벨이 10이하인 캐릭터를 삭제하고 남아있는 캐릭터의
+이름, 직업,  hp, mp 레벨을 출력하시오(쿼리 2개)
+db.games.remove({level:{$lte:10}})
+db.games.find({},{name:1, job:1, level:1, hp:1, mp:1, _id:0})
+
+
+
+
+
+
+
